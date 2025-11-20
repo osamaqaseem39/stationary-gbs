@@ -25,19 +25,16 @@ export default function CategoryGrid({ showHeader = true }: CategoryGridProps) {
         // Try to get root categories first (better for homepage)
         try {
           data = await apiClient.getRootCategories()
-          console.log('Root categories fetched:', data)
         } catch (rootError) {
-          console.warn('Failed to fetch root categories:', rootError)
+          // Silently fail and try active categories
         }
         
         // If no root categories, try all active categories
         if (!data || data.length === 0) {
-          console.log('No root categories found, trying all active categories...')
           try {
             data = await apiClient.getCategories()
-            console.log('Active categories fetched:', data)
           } catch (activeError) {
-            console.warn('Failed to fetch active categories:', activeError)
+            // Silently fail
           }
         }
         
@@ -50,10 +47,8 @@ export default function CategoryGrid({ showHeader = true }: CategoryGridProps) {
             cat.name &&
             cat.isActive === true // Only include active categories
           )
-          console.log(`Setting ${validCategories.length} valid active categories`)
           setCategories(validCategories)
         } else {
-          console.warn('No categories returned from API or empty array. Data:', data)
           setCategories([])
         }
       } catch (error) {

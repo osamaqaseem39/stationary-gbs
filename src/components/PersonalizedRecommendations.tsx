@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useAnalytics } from '@/contexts/AnalyticsContext'
 import { Product } from '@/lib/api'
 import ProductCard from './ProductCard'
@@ -22,49 +22,20 @@ const PersonalizedRecommendations: React.FC<PersonalizedRecommendationsProps> = 
   const [loading, setLoading] = useState(true)
   const [personalizedMessage, setPersonalizedMessage] = useState('')
 
-  useEffect(() => {
-    loadRecommendations()
-  }, [userProfile])
-
-  const loadRecommendations = async () => {
-    try {
-      setLoading(true)
-      
-      if (!userProfile) {
-        // Show trending products for new users
-        const trendingProducts = await apiClient.getTrendingProducts()
-        setRecommendations((trendingProducts as any).data.slice(0, maxItems))
-        setPersonalizedMessage('Discover our trending collection')
-        return
-      }
-
-      // Get personalized recommendations based on user profile
-      const personalizedProducts = await getPersonalizedProducts()
-      setRecommendations(personalizedProducts.slice(0, maxItems))
-      
-      // Generate personalized message
-      generatePersonalizedMessage()
-      
-    } catch (error) {
-      console.error('Error loading recommendations:', error)
-      // Fallback to trending products
-      const trendingProducts = await apiClient.getTrendingProducts()
-      setRecommendations((trendingProducts as any).data.slice(0, maxItems))
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const getPersonalizedProducts = async (): Promise<Product[]> => {
+  const getPersonalizedProducts = useCallback(async (): Promise<Product[]> => {
     if (!userProfile) return []
 
     try {
       // Build filters based on user preferences
       const filters: any = {}
 
-      // Filter by favorite categories
+      // Filter by favorite categories - skip if it's a name (not an ID)
       if (userProfile.preferences.favoriteCategories.length > 0) {
-        filters.category = userProfile.preferences.favoriteCategories[0] // Use most relevant category
+        const category = userProfile.preferences.favoriteCategories[0]
+        // Only use if it looks like an ObjectId (24 hex characters)
+        if (/^[0-9a-fA-F]{24}$/.test(category)) {
+          filters.category = category
+        }
       }
 
       // Filter by price range
@@ -78,9 +49,30 @@ const PersonalizedRecommendations: React.FC<PersonalizedRecommendationsProps> = 
         filters.colors = userProfile.preferences.favoriteColors
       }
 
-      // Filter by favorite brands
+      // Filter by favorite brands - convert brand names to IDs
       if (userProfile.preferences.favoriteBrands.length > 0) {
-        filters.brand = userProfile.preferences.favoriteBrands[0]
+        try {
+          const brandName = userProfile.preferences.favoriteBrands[0]
+          // Check if it's already an ID (ObjectId format)
+          if (/^[0-9a-fA-F]{24}$/.test(brandName)) {
+            filters.brand = brandName
+          } else {
+            // Try to find brand by name
+            const brands = await apiClient.getBrands()
+            const brandArray = Array.isArray(brands) ? brands : (brands as any).data || []
+            const foundBrand = brandArray.find((b: any) => 
+              b.name?.toLowerCase() === brandName.toLowerCase() || 
+              b.slug?.toLowerCase() === brandName.toLowerCase()
+            )
+            if (foundBrand?._id) {
+              filters.brand = foundBrand._id
+            }
+            // If brand not found, skip brand filtering to avoid 400 error
+          }
+        } catch (brandError) {
+          // Skip brand filtering if we can't fetch brands
+          console.warn('Could not resolve brand ID, skipping brand filter:', brandError)
+        }
       }
 
       // Filter by size preferences
@@ -109,7 +101,40 @@ const PersonalizedRecommendations: React.FC<PersonalizedRecommendationsProps> = 
       console.error('Error getting personalized products:', error)
       return []
     }
-  }
+  }, [userProfile])
+
+  const loadRecommendations = useCallback(async () => {
+    try {
+      setLoading(true)
+      
+      if (!userProfile) {
+        // Show trending products for new users
+        const trendingProducts = await apiClient.getTrendingProducts()
+        setRecommendations((trendingProducts as any).data.slice(0, maxItems))
+        setPersonalizedMessage('Discover our trending collection')
+        return
+      }
+
+      // Get personalized recommendations based on user profile
+      const personalizedProducts = await getPersonalizedProducts()
+      setRecommendations(personalizedProducts.slice(0, maxItems))
+      
+      // Generate personalized message
+      generatePersonalizedMessage()
+      
+    } catch (error) {
+      console.error('Error loading recommendations:', error)
+      // Fallback to trending products
+      const trendingProducts = await apiClient.getTrendingProducts()
+      setRecommendations((trendingProducts as any).data.slice(0, maxItems))
+    } finally {
+      setLoading(false)
+    }
+  }, [userProfile, maxItems, getPersonalizedProducts])
+
+  useEffect(() => {
+    loadRecommendations()
+  }, [loadRecommendations])
 
   const generatePersonalizedMessage = () => {
     if (!userProfile) return

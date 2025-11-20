@@ -46,7 +46,7 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
               <a href="/" className="flex items-center">
                 <Image
                   src="/images/logo.png"
-                  alt="She's Trends"
+                  alt="Gujrat Book Shop"
                   width={100}
                   height={100}
                   className="h-20 w-auto"
@@ -72,7 +72,7 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
                   </select>
                   <input
                     type="text"
-                    placeholder="Search luxury pieces, brands, styles..."
+                    placeholder="Search books, stationery, supplies..."
                     className="flex-1 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none bg-white"
                   />
                   <button className="px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-500 text-white hover:from-primary-700 hover:to-secondary-600 transition-all duration-200 flex items-center gap-2 font-medium">
@@ -85,9 +85,9 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
                   <div className="p-4">
                     <p className="text-sm text-gray-500">Popular searches:</p>
                     <div className="mt-2 space-y-1">
-                      <button className="block w-full text-left px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 rounded">Evening gowns</button>
-                      <button className="block w-full text-left px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 rounded">Designer handbags</button>
-                      <button className="block w-full text-left px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 rounded">Bridal collection</button>
+                    <button className="block w-full text-left px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 rounded">Textbooks</button>
+                    <button className="block w-full text-left px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 rounded">Notebooks</button>
+                    <button className="block w-full text-left px-2 py-1 text-sm text-gray-700 hover:bg-gray-50 rounded">Pens & Pencils</button>
                     </div>
                   </div>
                 </div>
@@ -195,7 +195,7 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
               <a href="/" className="flex items-center justify-center">
                 <Image
                   src="/images/logo.png"
-                  alt="She's Trends"
+                  alt="Gujrat Book Shop"
                   width={100}
                   height={40}
                   className="h-10 w-auto"
@@ -249,7 +249,7 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
                 <input
                   type="text"
-                  placeholder="Search luxury pieces..."
+                  placeholder="Search books and stationery..."
                   className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent"
                 />
               </div>

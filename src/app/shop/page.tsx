@@ -89,13 +89,16 @@ export default function ShopPage() {
           sortOrder: 'desc'
         }
         const response = await apiClient.getProducts(filters)
-        console.log('Fetched products:', response.data.length, response.data)
-        console.log('First product sample:', response.data[0])
         setProducts(response.data)
         
-        // Update price range based on actual product prices if needed
+        // Update price range based on actual product prices if needed (include sale prices)
         if (response.data.length > 0) {
-          const prices = response.data.map(p => p.price).filter(p => p > 0)
+          const prices = response.data.map(p => {
+            // Use salePrice if available and valid, otherwise use regular price
+            return (p.salePrice && typeof p.salePrice === 'number' && p.salePrice > 0) 
+              ? p.salePrice 
+              : p.price
+          }).filter(p => p > 0)
           if (prices.length > 0) {
             const minPrice = Math.min(...prices)
             const maxPrice = Math.max(...prices)

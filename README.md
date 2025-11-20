@@ -1,6 +1,6 @@
-# E-commerce Landing Page
+# Gujrat Book Shop Landing Page
 
-A modern, responsive e-commerce landing page built with Next.js 14, TailwindCSS, and Framer Motion, inspired by laam.pk.
+A modern, responsive e-commerce landing page for Gujrat Book Shop - a stationery and books online store built with Next.js 14, TailwindCSS, and Framer Motion.
 
 ## Features
 
@@ -80,7 +80,7 @@ src/
 
 ## Design Features
 
-- Minimalist, fashion-forward aesthetic
+- Clean, modern aesthetic perfect for books and stationery
 - Smooth animations and transitions
 - Mobile-first responsive design
 - Modern UI components with hover effects

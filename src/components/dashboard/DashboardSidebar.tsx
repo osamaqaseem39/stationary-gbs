@@ -44,7 +44,7 @@ export default function DashboardSidebar() {
             <ShoppingBag className="h-5 w-5 text-white" />
           </div>
           {!isCollapsed && (
-            <h2 className="text-xl font-bold text-gray-900">She's Trends</h2>
+            <h2 className="text-xl font-bold text-gray-900">Gujrat Book Shop</h2>
           )}
         </div>
 

@@ -10,12 +10,12 @@ export default function Navbar() {
   const { itemCount } = useCart()
 
   const categories = [
-    'Evening Wear',
-    'Day Dresses', 
-    'Couture',
-    'Accessories',
-    'Jewelry',
-    'Bridal'
+    'Books',
+    'Notebooks', 
+    'Pens & Writing',
+    'Art Supplies',
+    'School Supplies',
+    'Office Supplies'
   ]
 
   return (
@@ -24,7 +24,7 @@ export default function Navbar() {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex-shrink-0">
-            <h1 className="text-2xl font-serif font-bold text-gradient">She's Trends</h1>
+            <h1 className="text-2xl font-serif font-bold text-gradient">Gujrat Book Shop</h1>
           </div>
 
           {/* Desktop Navigation */}
@@ -67,7 +67,7 @@ export default function Navbar() {
               <input
                 type="text"
                 name="q"
-                placeholder="Search luxury pieces..."
+                placeholder="Search books and stationery..."
                 className="w-full pl-10 pr-4 py-2 border border-primary-200 rounded-full focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent"
               />
             </form>

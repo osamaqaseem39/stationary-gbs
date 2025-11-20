@@ -57,7 +57,7 @@ export default function Footer() {
               <a href="/" className="flex items-center">
                 <Image
                   src="/images/logo.png"
-                  alt="She's Trends"
+                  alt="Gujrat Book Shop"
                   width={120}
                   height={120}
                   className="h-16 w-auto"
@@ -65,7 +65,7 @@ export default function Footer() {
               </a>
             </div>
             <p className="text-gray-600 mb-4 text-sm leading-relaxed">
-              Exquisite couture for the sophisticated woman. Discover luxury fashion that defines elegance and style.
+              Your trusted source for books, stationery, and educational supplies. Quality products for students, professionals, and book lovers.
             </p>
             <div className="flex space-x-3">
               {socialLinks.map((social) => (
@@ -158,8 +158,8 @@ export default function Footer() {
             transition={{ duration: 0.6 }}
             className="flex flex-col md:flex-row justify-between items-center text-gray-400 text-sm"
           >
-            <p>&copy; 2024 She's Trends. All rights reserved.</p>
-            <p className="mt-2 md:mt-0">Crafted with ❤️ for the sophisticated woman</p>
+            <p>&copy; 2024 Gujrat Book Shop. All rights reserved.</p>
+            <p className="mt-2 md:mt-0">Serving students and book lovers since day one</p>
           </motion.div>
         </div>
       </div>

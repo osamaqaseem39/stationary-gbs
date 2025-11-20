@@ -23,9 +23,9 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
     { name: 'All', href: '/shop', icon: Home },
     { name: 'New Arrivals', href: '/shop?filter=new', icon: Sparkles },
     { 
-      name: 'Women', 
-      href: '/shop?category=women', 
-      icon: Users
+      name: 'Books', 
+      href: '/shop?category=books', 
+      icon: BookOpen
     },
     { name: 'Brands', href: '/brands', icon: Tag },
     { name: 'Top Curations', href: '/shop?filter=featured', icon: Star },
@@ -97,7 +97,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             <div className="p-4">
               {/* Header */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="text-lg font-serif font-bold text-gradient">She's Trends</h2>
+                <h2 className="text-lg font-serif font-bold text-gradient">Gujrat Book Shop</h2>
                 <button
                   onClick={onClose}
                   className="p-2 text-gray-500 hover:text-gray-700"
