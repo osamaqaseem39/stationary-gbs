@@ -10,6 +10,7 @@ import PersonalizedRecommendations from './PersonalizedRecommendations'
 import FeaturedProducts from './FeaturedProducts'
 import CategoryGrid from './CategoryGrid'
 import Brands from './Brands'
+import SchoolsSection from './SchoolsSection'
 
 const PersonalizedHomepage: React.FC = () => {
   const { userProfile, trackEvent } = useAnalytics()
@@ -34,8 +35,8 @@ const PersonalizedHomepage: React.FC = () => {
       if (!userProfile) {
         // Default content for new users
         setPersonalizedContent({
-          heroMessage: 'Discover Your Perfect Style',
-          recommendedCategories: ['evening-wear', 'day-dresses', 'couture'],
+          heroMessage: 'Welcome to Gujrat Book Shop',
+          recommendedCategories: ['books', 'notebooks', 'stationery'],
           trendingProducts: [],
           personalizedOffers: ['Welcome Offer: 10% off your first order'],
           showCategories: true,
@@ -57,7 +58,7 @@ const PersonalizedHomepage: React.FC = () => {
 
   const generatePersonalizedContent = async () => {
     if (!userProfile) return {
-      heroMessage: 'Discover Your Perfect Style',
+      heroMessage: 'Welcome to Gujrat Book Shop',
       recommendedCategories: [],
       trendingProducts: [],
       personalizedOffers: [],
@@ -161,7 +162,7 @@ const PersonalizedHomepage: React.FC = () => {
 
       {/* Personalized Offers */}
       {personalizedContent.personalizedOffers.length > 0 && (
-        <div className="bg-primary-600 text-white py-4">
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-4">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center">
               <p className="text-lg font-medium">
@@ -172,42 +173,69 @@ const PersonalizedHomepage: React.FC = () => {
         </div>
       )}
 
+      {/* Quick Access Banner */}
+      <div className="bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-6">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+            <div>
+              <h3 className="text-xl font-bold mb-2">📚 Books</h3>
+              <p className="text-blue-100">Textbooks, Novels & More</p>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-2">✏️ Stationery</h3>
+              <p className="text-blue-100">Pens, Notebooks & Supplies</p>
+            </div>
+            <div>
+              <h3 className="text-xl font-bold mb-2">👔 Uniforms</h3>
+              <p className="text-blue-100">School & Sports Uniforms</p>
+            </div>
+          </div>
+        </div>
+      </div>
 
-      {/* Personalized Recommendations */}
+
+      {/* Trending Products */}
       {personalizedContent.showRecommendations && (
-        <PersonalizedRecommendations 
-          title={"Trending Now"}
-          maxItems={8}
-          showPersonalizedMessage={false}
-        />
+        <div className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <PersonalizedRecommendations 
+              title={"Trending Now"}
+              maxItems={8}
+              showPersonalizedMessage={false}
+            />
+          </div>
+        </div>
       )}
 
       {/* Categories */}
-      <div className="py-12 bg-white">
+      <div className="py-16 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-serif font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
-              <Grid3X3 className="h-7 w-7 text-primary-600" />
-              {"Shop by Category"}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
+              <Grid3X3 className="h-8 w-8 text-blue-600" />
+              Shop by Category
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Explore curated collections tailored to every style and occasion.
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Explore our wide range of products organized by category
             </p>
           </div>
           <CategoryGrid showHeader={false} />
         </div>
       </div>
 
+      {/* Schools & Educational Boards */}
+      <SchoolsSection />
+
       {/* Featured Products */}
-      <div className="py-12 bg-gray-50">
+      <div className="py-16 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-8">
-            <h2 className="text-3xl font-serif font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
-              <Award className="h-7 w-7 text-secondary-500" />
-              {"Featured Products"}
+          <div className="text-center mb-12">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
+              <Award className="h-8 w-8 text-blue-600" />
+              Featured Products
             </h2>
-            <p className="text-gray-600 max-w-2xl mx-auto">
-              Handpicked bestsellers and trending pieces our customers love.
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Handpicked bestsellers and trending products our customers love
             </p>
           </div>
           <FeaturedProducts showHeader={false} />

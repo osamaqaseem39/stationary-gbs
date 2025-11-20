@@ -72,7 +72,7 @@ export default function Footer() {
                 <a
                   key={social.name}
                   href={social.href}
-                  className="p-2 bg-gray-100 rounded-full hover:bg-primary-100 hover:text-primary-600 transition-colors"
+                  className="p-2 bg-gray-100 rounded-full hover:bg-blue-100 hover:text-blue-600 transition-colors"
                 >
                   <social.icon className="h-4 w-4 text-gray-600" />
                 </a>

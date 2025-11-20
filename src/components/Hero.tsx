@@ -8,17 +8,19 @@ import Link from 'next/link'
 const banners = [
   {
     src: '/images/banner1.png',
-    alt: 'Luxury Women\'s Couture',
-    title: 'Élégance',
-    subtitle: 'Couture',
-    description: 'Exclusive luxury couture for the sophisticated woman. Discover our curated collection of high-end women\'s fashion, designer dresses, and premium accessories.'
+    alt: 'Gujrat Book Shop - Stationery & Books',
+    title: 'Welcome to',
+    subtitle: 'Gujrat Book Shop',
+    description: 'Your trusted source for books, stationery, and educational supplies. Quality products for students, professionals, and book lovers.',
+    cta: 'Shop Now'
   },
   {
     src: '/images/banner2.png',
-    alt: 'Luxury Fashion Collection',
-    title: 'Timeless',
-    subtitle: 'Elegance',
-    description: 'Exclusive luxury couture for the sophisticated woman. Discover our curated collection of high-end women\'s fashion, designer dresses, and premium accessories.'
+    alt: 'Educational Supplies & School Books',
+    title: 'Complete',
+    subtitle: 'Educational Solutions',
+    description: 'Find everything you need for school - from textbooks and notebooks to uniforms and art supplies. All in one place.',
+    cta: 'Explore Categories'
   }
 ]
 
@@ -61,25 +63,63 @@ export default function Hero() {
             if (index !== currentSlide) return null
 
             return (
-              <Link href="/shop" key={index}>
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  transition={{ duration: 0.8 }}
-                  className="absolute inset-0 cursor-pointer"
-                >
-                  {/* Background Image */}
-                  <div className="absolute inset-0">
-                    <img
-                      src={banner.src}
-                      alt={banner.alt}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
+              <motion.div
+                key={index}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.8 }}
+                className="absolute inset-0"
+              >
+                {/* Background Image with Overlay */}
+                <div className="absolute inset-0">
+                  <img
+                    src={banner.src}
+                    alt={banner.alt}
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-blue-900/70 via-blue-800/60 to-blue-900/70" />
+                </div>
 
+                {/* Content Overlay */}
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center text-white px-4 max-w-4xl">
+                    <motion.h1
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.2 }}
+                      className="text-4xl md:text-6xl font-bold mb-4"
+                    >
+                      {banner.title}
+                    </motion.h1>
+                    <motion.h2
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.3 }}
+                      className="text-5xl md:text-7xl font-serif font-bold mb-6 text-blue-200"
+                    >
+                      {banner.subtitle}
+                    </motion.h2>
+                    <motion.p
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.4 }}
+                      className="text-lg md:text-xl mb-8 text-blue-100 max-w-2xl mx-auto"
+                    >
+                      {banner.description}
+                    </motion.p>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.5 }}
+                    >
+                      <Link href="/shop" className="btn-primary text-lg px-10 py-4">
+                        {banner.cta}
+                      </Link>
+                    </motion.div>
+                  </div>
+                </div>
               </motion.div>
-              </Link>
             )
           })}
         </AnimatePresence>

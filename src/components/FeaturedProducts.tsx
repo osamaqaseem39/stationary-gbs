@@ -69,11 +69,11 @@ export default function FeaturedProducts({ showHeader = true }: FeaturedProducts
             className="text-center mb-12"
           >
             <div className="flex items-center justify-center gap-2 mb-4">
-              <Award className="h-6 w-6 text-primary-600" />
-              <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900">
+              <Award className="h-6 w-6 text-blue-600" />
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900">
                 Featured Products
               </h2>
-              <TrendingUp className="h-6 w-6 text-secondary-500" />
+              <TrendingUp className="h-6 w-6 text-cyan-500" />
             </div>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Discover our most popular and trending pieces, carefully curated for the sophisticated woman.
@@ -111,12 +111,12 @@ export default function FeaturedProducts({ showHeader = true }: FeaturedProducts
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex flex-col gap-2">
                   {product.isNew && (
-                    <span className="bg-primary-600 text-white text-xs px-2 py-1 rounded-full font-medium">
+                    <span className="bg-blue-600 text-white text-xs px-2 py-1 rounded-full font-medium">
                       New
                     </span>
                   )}
                   {product.isSale && (
-                    <span className="bg-secondary-500 text-white text-xs px-2 py-1 rounded-full font-medium">
+                    <span className="bg-cyan-500 text-white text-xs px-2 py-1 rounded-full font-medium">
                       Sale
                     </span>
                   )}
@@ -144,7 +144,7 @@ export default function FeaturedProducts({ showHeader = true }: FeaturedProducts
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    <span className="text-lg font-bold text-primary-600">
+                    <span className="text-lg font-bold text-blue-600">
                       ₨{typeof product.price === 'number' ? product.price.toLocaleString() : '0'}
                     </span>
                     {product.originalPrice && typeof product.originalPrice === 'number' && product.originalPrice > product.price && (
@@ -153,7 +153,7 @@ export default function FeaturedProducts({ showHeader = true }: FeaturedProducts
                       </span>
                     )}
                   </div>
-                  <button className="p-2 bg-primary-600 text-white rounded-full hover:bg-primary-700 transition-colors duration-200">
+                  <button className="p-2 bg-blue-600 text-white rounded-full hover:bg-blue-700 transition-colors duration-200">
                     <ShoppingBag className="h-4 w-4" />
                   </button>
                 </div>

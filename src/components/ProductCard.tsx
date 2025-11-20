@@ -78,7 +78,7 @@ export default function ProductCard({
           {/* Price and Add to Cart in one line */}
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
-              <span className="text-base font-semibold text-primary-600">
+              <span className="text-base font-semibold text-blue-600">
                 ₨{typeof price === 'number' ? price.toLocaleString() : '0'}
               </span>
               {originalPrice && typeof originalPrice === 'number' && originalPrice > price && (
@@ -92,7 +92,7 @@ export default function ProductCard({
                 e.preventDefault()
                 // Add to cart logic here
               }}
-              className="p-1.5 bg-primary-600 text-white rounded hover:bg-primary-700 transition-colors flex-shrink-0"
+              className="p-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex-shrink-0"
             >
               <ShoppingBag className="h-4 w-4" />
             </button>

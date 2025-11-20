@@ -145,15 +145,15 @@ const PersonalizedRecommendations: React.FC<PersonalizedRecommendationsProps> = 
     if (userProfile.behavior.totalVisits > 10) {
       messages.push('Welcome back!')
     } else if (userProfile.behavior.totalVisits > 3) {
-      messages.push('We\'re getting to know your style!')
+      messages.push('We\'re getting to know your preferences!')
     } else {
-      messages.push('Discover your perfect style!')
+      messages.push('Discover products you\'ll love!')
     }
 
     // Based on preferences
     if (userProfile.preferences.favoriteCategories.length > 0) {
       const category = userProfile.preferences.favoriteCategories[0]
-      messages.push(`Curated ${category} pieces for you`)
+      messages.push(`Curated ${category} products for you`)
     }
 
     // Based on purchase history
@@ -200,7 +200,7 @@ const PersonalizedRecommendations: React.FC<PersonalizedRecommendationsProps> = 
   }
 
   return (
-    <div className="py-12 bg-gray-50">
+    <div className="py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-900 mb-2">

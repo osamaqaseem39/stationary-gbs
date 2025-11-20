@@ -61,12 +61,12 @@ export default function Brands() {
           transition={{ duration: 0.6 }}
           className="text-center mb-12"
         >
-          <h2 className="text-3xl md:text-4xl font-serif font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
-            <Crown className="h-8 w-8 text-primary-600" />
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 flex items-center justify-center gap-3">
+            <Crown className="h-8 w-8 text-blue-600" />
             Our Brands
           </h2>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-            Discover our curated collection of premium fashion brands, each offering unique styles and exceptional quality.
+            Discover trusted publishers and brands offering quality books and stationery products.
           </p>
         </motion.div>
 
@@ -97,7 +97,7 @@ export default function Brands() {
                         className="object-contain group-hover:scale-105 transition-transform duration-300"
                       />
                     </div>
-                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-primary-600 transition-colors">
+                    <h3 className="text-xl font-semibold text-gray-900 mb-2 group-hover:text-blue-600 transition-colors">
                       {(brand as UiBrand).name}
                     </h3>
                     {/* Optional metadata if available later */}
@@ -107,7 +107,7 @@ export default function Brands() {
                       </p>
                     )}
                     <div className="opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <span className="inline-flex items-center text-primary-600 text-sm font-medium hover:text-primary-700">
+                      <span className="inline-flex items-center text-blue-600 text-sm font-medium hover:text-blue-700">
                         View Brand
                         <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />

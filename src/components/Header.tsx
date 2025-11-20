@@ -57,7 +57,7 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
             {/* Search Bar */}
             <div className="flex-1 max-w-2xl mx-8">
               <div className="relative">
-                <div className="flex shadow-lg rounded-xl overflow-hidden bg-white border border-gray-200 hover:border-primary-300 focus-within:border-primary-500 focus-within:ring-2 focus-within:ring-primary-200 transition-all duration-200">
+                <div className="flex shadow-lg rounded-xl overflow-hidden bg-white border border-gray-200 hover:border-blue-300 focus-within:border-blue-500 focus-within:ring-2 focus-within:ring-blue-200 transition-all duration-200">
                   <select 
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
@@ -75,7 +75,7 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
                     placeholder="Search books, stationery, supplies..."
                     className="flex-1 px-4 py-3 text-gray-900 placeholder-gray-500 focus:outline-none bg-white"
                   />
-                  <button className="px-6 py-3 bg-gradient-to-r from-primary-600 to-secondary-500 text-white hover:from-primary-700 hover:to-secondary-600 transition-all duration-200 flex items-center gap-2 font-medium">
+                  <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-500 text-white hover:from-blue-700 hover:to-blue-600 transition-all duration-200 flex items-center gap-2 font-medium">
                     <Search className="h-4 w-4" />
                     <span className="hidden sm:inline">Search</span>
                   </button>
@@ -113,17 +113,17 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute -top-12 right-0 bg-primary-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap z-50"
+                      className="absolute -top-12 right-0 bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap z-50"
                     >
                       {message}
                       <div className="absolute bottom-0 right-4 transform translate-y-full">
-                        <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-primary-600"></div>
+                        <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-blue-600"></div>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
                 <button 
-                  className="relative p-2 text-gray-700 hover:text-primary-600 transition-colors"
+                  className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors"
                   onClick={(e) => {
                     e.preventDefault()
                     // Prevent navigation to cart page
@@ -131,7 +131,7 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
                 >
                   <ShoppingBag className="h-6 w-6" />
                   {itemCount > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-primary-500 text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                    <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                       {itemCount}
                     </span>
                   )}
@@ -142,7 +142,7 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
               <div className="relative">
                 <button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center space-x-2 text-sm text-gray-700 hover:text-primary-600 transition-colors"
+                  className="flex items-center space-x-2 text-sm text-gray-700 hover:text-blue-600 transition-colors"
                 >
                   <User className="h-5 w-5" />
                   <span>Sign In / Register</span>
@@ -185,7 +185,7 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
             {/* Menu Button */}
             <button
               onClick={onMenuClick}
-              className="p-2 text-gray-700 hover:text-primary-600 transition-colors"
+              className="p-2 text-gray-700 hover:text-blue-600 transition-colors"
             >
               {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
             </button>
@@ -215,17 +215,17 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
                       initial={{ opacity: 0, y: -10 }}
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -10 }}
-                      className="absolute -top-12 right-0 bg-primary-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap z-50"
+                      className="absolute -top-12 right-0 bg-blue-600 text-white text-xs px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap z-50"
                     >
                       {message}
                       <div className="absolute bottom-0 right-4 transform translate-y-full">
-                        <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-primary-600"></div>
+                        <div className="w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-blue-600"></div>
                       </div>
                     </motion.div>
                   )}
                 </AnimatePresence>
                 <button 
-                  className="relative p-2 text-gray-700 hover:text-primary-600 transition-colors"
+                  className="relative p-2 text-gray-700 hover:text-blue-600 transition-colors"
                   onClick={(e) => {
                     e.preventDefault()
                     // Prevent navigation to cart page
@@ -250,13 +250,13 @@ export default function Header({ onMenuClick, isMobileMenuOpen, onFilterClick }:
                 <input
                   type="text"
                   placeholder="Search books and stationery..."
-                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                 />
               </div>
               {onFilterClick && (
                 <button
                   onClick={onFilterClick}
-                  className="p-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 hover:text-primary-600 transition-colors"
+                  className="p-2 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 hover:text-blue-600 transition-colors"
                 >
                   <Filter className="h-4 w-4" />
                 </button>

@@ -32,21 +32,21 @@ export default function MobileBottomNav() {
             }}
             className={`flex flex-col items-center justify-center py-2 px-1 relative ${
               activeTab === item.id
-                ? 'text-primary-600'
+                ? 'text-blue-600'
                 : 'text-gray-500 hover:text-gray-700'
             }`}
           >
             <div className="relative">
               <item.icon className="h-5 w-5" />
               {item.badge !== undefined && item.badge > 0 && (
-                <span className="absolute -top-2 -right-2 bg-primary-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                <span className="absolute -top-2 -right-2 bg-blue-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {item.badge}
                 </span>
               )}
             </div>
             <span className="text-xs mt-1 font-medium">{item.label}</span>
             {activeTab === item.id && (
-              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-primary-600 rounded-b"></div>
+              <div className="absolute top-0 left-1/2 transform -translate-x-1/2 w-6 h-0.5 bg-blue-600 rounded-b"></div>
             )}
           </a>
         ))}
