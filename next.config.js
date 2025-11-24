@@ -1,5 +1,5 @@
 /** @type {import('next').NextConfig} */
-const backendBase = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001/api'
+const backendBase = process.env.NEXT_PUBLIC_API_URL || 'https://gbs-server.vercel.app/api'
 
 // Extract domain from backend URL if it's a full URL
 const getImageDomains = () => {

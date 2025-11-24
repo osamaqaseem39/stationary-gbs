@@ -87,7 +87,7 @@ const PersonalizedHomepage: React.FC = () => {
   }
 
   const generateHeroMessage = (): string => {
-    if (!userProfile) return 'Discover Your Perfect Style'
+    if (!userProfile) return 'Welcome to Gujrat Book Shop'
 
     const messages = []
 
@@ -95,15 +95,15 @@ const PersonalizedHomepage: React.FC = () => {
     if (userProfile.behavior.totalVisits > 10) {
       messages.push('Welcome back!')
     } else if (userProfile.behavior.totalVisits > 3) {
-      messages.push('We\'re getting to know your style!')
+      messages.push('We\'re getting to know your preferences!')
     } else {
-      messages.push('Discover your perfect style!')
+      messages.push('Discover products you\'ll love!')
     }
 
     // Based on preferences
     if (userProfile.preferences.favoriteCategories.length > 0) {
       const category = userProfile.preferences.favoriteCategories[0]
-      messages.push(`Curated ${category} pieces for you`)
+      messages.push(`Curated ${category} products for you`)
     }
 
     // Based on location

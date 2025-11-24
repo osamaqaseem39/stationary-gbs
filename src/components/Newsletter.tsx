@@ -19,7 +19,7 @@ export default function Newsletter() {
   }
 
   return (
-    <section className="py-8 bg-gray-900">
+    <section className="py-12 bg-gradient-to-r from-blue-900 to-blue-800">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -29,11 +29,11 @@ export default function Newsletter() {
           className="text-center"
         >
           <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-serif font-bold text-white mb-4">
-              Join Our Exclusive Circle
+            <h2 className="text-2xl md:text-3xl font-bold text-white mb-4">
+              Stay Updated
             </h2>
             <p className="text-gray-300 mb-6">
-              Get exclusive access to new collections and special offers
+              Subscribe to get updates on new books, stationery, and special offers
             </p>
 
             {!isSubscribed ? (
@@ -43,7 +43,7 @@ export default function Newsletter() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className="flex-1 px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-600 focus:border-transparent"
+                  className="flex-1 px-4 py-2 rounded-lg border border-gray-600 bg-gray-800 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-600 focus:border-transparent"
                   required
                 />
                 <motion.button
