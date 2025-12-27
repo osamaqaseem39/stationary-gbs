@@ -125,10 +125,16 @@ export interface Category {
   slug: string
   description?: string
   image?: string
-  parent?: string
+  icon?: string
+  color?: string
+  parentId?: string
+  parent?: Category | string
   children?: Category[]
   isActive: boolean
   sortOrder?: number
+  metaTitle?: string
+  metaDescription?: string
+  metaKeywords?: string[]
   createdAt: string
   updatedAt: string
 }
