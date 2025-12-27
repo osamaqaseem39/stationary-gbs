@@ -1,33 +1,33 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
+import type { CartItem } from '@/lib/types'
 
-interface CartItem {
-  productId: string
+// Extended CartItem for local storage (includes display fields)
+interface LocalCartItem extends Omit<CartItem, 'product' | 'variationId'> {
   name: string
-  price: number
-  quantity: number
   image?: string
   size?: string
   color?: string
+  variationId?: string
 }
 
 interface CartContextType {
-  items: CartItem[]
+  items: LocalCartItem[]
   itemCount: number
-  addToCart: (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => void
-  removeFromCart: (productId: string) => void
-  updateQuantity: (productId: string, quantity: number) => void
+  addToCart: (item: Omit<LocalCartItem, 'quantity'> & { quantity?: number }) => void
+  removeFromCart: (productId: string, variationId?: string) => void
+  updateQuantity: (productId: string, quantity: number, variationId?: string) => void
   clearCart: () => void
   message: string | null
   setMessage: (message: string | null) => void
-  isInCart: (productId: string, size?: string, color?: string) => boolean
+  isInCart: (productId: string, size?: string, color?: string, variationId?: string) => boolean
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined)
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [items, setItems] = useState<CartItem[]>([])
+  const [items, setItems] = useState<LocalCartItem[]>([])
   const [message, setMessage] = useState<string | null>(null)
 
   // Load cart from localStorage on mount
@@ -35,9 +35,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
     const stored = localStorage.getItem('cart')
     if (stored) {
       try {
-        setItems(JSON.parse(stored))
+        const parsed = JSON.parse(stored)
+        setItems(Array.isArray(parsed) ? parsed : [])
       } catch (error) {
         console.error('Error parsing cart:', error)
+        setItems([])
       }
     }
   }, [])
@@ -57,13 +59,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
     }
   }, [message])
 
-  const addToCart = (item: Omit<CartItem, 'quantity'> & { quantity?: number }) => {
+  const addToCart = (item: Omit<LocalCartItem, 'quantity'> & { quantity?: number }) => {
     setItems(prev => {
-      const existingIndex = prev.findIndex(
-        i => i.productId === item.productId && 
-        i.size === item.size && 
-        i.color === item.color
-      )
+      // Create a unique key for the cart item (productId + variationId + size + color)
+      const itemKey = `${item.productId}-${item.variationId || ''}-${item.size || ''}-${item.color || ''}`
+      
+      const existingIndex = prev.findIndex(prevItem => {
+        const prevKey = `${prevItem.productId}-${prevItem.variationId || ''}-${prevItem.size || ''}-${prevItem.color || ''}`
+        return prevKey === itemKey
+      })
 
       if (existingIndex >= 0) {
         // Update existing item quantity
@@ -76,9 +80,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return updated
       } else {
         // Add new item
-        const newItem: CartItem = {
-          ...item,
-          quantity: item.quantity || 1
+        const newItem: LocalCartItem = {
+          productId: item.productId,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity || 1,
+          image: item.image,
+          size: item.size,
+          color: item.color,
+          variationId: item.variationId
         }
         setMessage(`${item.name} added to cart`)
         return [...prev, newItem]
@@ -86,20 +96,30 @@ export function CartProvider({ children }: { children: ReactNode }) {
     })
   }
 
-  const removeFromCart = (productId: string) => {
-    setItems(prev => prev.filter(item => item.productId !== productId))
+  const removeFromCart = (productId: string, variationId?: string) => {
+    setItems(prev => {
+      if (variationId) {
+        return prev.filter(item => !(item.productId === productId && item.variationId === variationId))
+      }
+      return prev.filter(item => item.productId !== productId)
+    })
     setMessage('Item removed from cart')
   }
 
-  const updateQuantity = (productId: string, quantity: number) => {
+  const updateQuantity = (productId: string, quantity: number, variationId?: string) => {
     if (quantity <= 0) {
-      removeFromCart(productId)
+      removeFromCart(productId, variationId)
       return
     }
     setItems(prev =>
-      prev.map(item =>
-        item.productId === productId ? { ...item, quantity } : item
-      )
+      prev.map(item => {
+        if (variationId) {
+          return item.productId === productId && item.variationId === variationId
+            ? { ...item, quantity }
+            : item
+        }
+        return item.productId === productId ? { ...item, quantity } : item
+      })
     )
   }
 
@@ -108,12 +128,18 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setMessage(null)
   }
 
-  const isInCart = (productId: string, size?: string, color?: string) => {
-    return items.some(item => 
-      item.productId === productId && 
-      item.size === (size || undefined) && 
-      item.color === (color || undefined)
-    )
+  const isInCart = (productId: string, size?: string, color?: string, variationId?: string) => {
+    return items.some(item => {
+      if (variationId) {
+        return item.productId === productId && 
+               item.variationId === variationId &&
+               item.size === (size || undefined) && 
+               item.color === (color || undefined)
+      }
+      return item.productId === productId && 
+             item.size === (size || undefined) && 
+             item.color === (color || undefined)
+    })
   }
 
   const itemCount = items.reduce((sum, item) => sum + item.quantity, 0)

@@ -13,7 +13,10 @@ export const getCorsConfig = (): RequestInit => ({
 
 // No sample data - API only
 
-// Product interface for landing page
+// Import normalized types
+import type { Product as NormalizedProduct, DisplayProduct, ProductPricing, ProductInventory, Brand, Category } from './types'
+
+// Product interface for landing page (compatible with DisplayProduct)
 export interface Product {
   _id: string
   name: string
@@ -27,6 +30,7 @@ export interface Product {
   category: string
   categories?: string[]
   brand: string
+  brandId?: string
   status: 'draft' | 'published' | 'archived'
   inStock: boolean
   stockQuantity: number
@@ -140,12 +144,10 @@ class ApiClient {
     const placeholder = '/images/logo.png'
 
     // Normalize images from multiple possible shapes
-    // Possible shapes: string[], [{ url }], [{ imageUrl }], [{ path }], [ObjectId]
     let imageUrls: string[] = []
     if (Array.isArray(raw?.images)) {
       for (const img of raw.images) {
         if (typeof img === 'string') {
-          // If it looks like a URL/path, accept; if it looks like an ObjectId, skip
           const looksLikeObjectId = /^[a-f\d]{24}$/i.test(img)
           if (!looksLikeObjectId) {
             imageUrls.push(img)
@@ -162,19 +164,34 @@ class ApiClient {
       imageUrls = [placeholder]
     }
 
-    // Normalize brand to a readable string; avoid showing ObjectId
+    // Normalize brand - handle normalized structure (brandId or populated brand)
     let brandName: string = ''
-    if (typeof raw?.brand === 'string') {
-      const looksLikeObjectId = /^[a-f\d]{24}$/i.test(raw.brand)
-      brandName = looksLikeObjectId ? '' : raw.brand
-    } else if (raw?.brand && typeof raw.brand === 'object') {
-      brandName = raw.brand.name || raw.brand.slug || raw.brand._id || ''
+    let brandId: string | undefined = undefined
+    
+    if (raw?.brandId) {
+      brandId = raw.brandId
     }
-    const brandDisplay = brandName && String(brandName).trim() !== '' ? brandName : ''
+    
+    if (raw?.brand) {
+      if (typeof raw.brand === 'string') {
+        const looksLikeObjectId = /^[a-f\d]{24}$/i.test(raw.brand)
+        if (looksLikeObjectId) {
+          brandId = raw.brand
+        } else {
+          brandName = raw.brand
+        }
+      } else if (typeof raw.brand === 'object' && raw.brand.name) {
+        brandName = raw.brand.name
+        brandId = raw.brand._id || brandId
+      }
+    }
+    
+    const brandDisplay = brandName && String(brandName).trim() !== '' ? brandName : 'Unknown'
 
-    // Normalize categories to human-readable names; preserve IDs for filtering
+    // Normalize categories - handle normalized structure
     let categoryNames: string[] | undefined = undefined
     let categoryIds: string[] | undefined = undefined
+    
     if (Array.isArray(raw?.categories)) {
       const isObjectId = (s: string) => /^[a-f\d]{24}$/i.test(s)
       const names: string[] = []
@@ -184,10 +201,8 @@ class ApiClient {
         if (!cat) return
         if (typeof cat === 'string') {
           if (isObjectId(cat)) {
-            // Preserve category ID for filtering
             ids.push(cat)
           } else {
-            // It's already a name
             names.push(cat)
           }
         } else if (typeof cat === 'object') {
@@ -195,50 +210,70 @@ class ApiClient {
           if (label && !isObjectId(String(label))) {
             names.push(String(label))
           }
-          // Also preserve the ID if available
           if (cat._id && isObjectId(cat._id)) {
             ids.push(cat._id)
           }
         }
       })
       
-      // Use names if available, otherwise preserve IDs for filtering
       categoryNames = names.length > 0 ? names : undefined
       categoryIds = ids.length > 0 ? ids : undefined
     }
 
-    // Normalize price/originalPrice/salePrice logic
-    // Priority: salePrice (if lower) > price > originalPrice
+    // Normalize pricing - handle normalized ProductPricing structure
     let normalizedPrice = raw?.price || 0
     let normalizedOriginalPrice = raw?.originalPrice
     let normalizedSalePrice = raw?.salePrice
-    let normalizedIsSale = raw?.isSale || false
+    let normalizedIsSale = false
     
-    // If salePrice exists, mark product as on sale
-    if (normalizedSalePrice !== undefined && typeof normalizedSalePrice === 'number' && normalizedSalePrice > 0) {
-      normalizedIsSale = true
+    // Check for normalized pricing structure
+    if (raw?.pricing) {
+      const pricing = raw.pricing as ProductPricing
+      normalizedPrice = pricing.basePrice || normalizedPrice
+      normalizedSalePrice = pricing.salePrice
+      normalizedOriginalPrice = pricing.basePrice // Use basePrice as original when sale exists
       
-      // If salePrice is lower than price, use it as the display price
-      if (normalizedSalePrice < normalizedPrice) {
-        // Use the higher of price or originalPrice as the original price
-        normalizedOriginalPrice = normalizedOriginalPrice 
-          ? Math.max(normalizedOriginalPrice, normalizedPrice)
-          : normalizedPrice
-        normalizedPrice = normalizedSalePrice
+      if (pricing.salePrice && pricing.salePrice < pricing.basePrice) {
+        normalizedIsSale = true
+        normalizedPrice = pricing.salePrice
+        normalizedOriginalPrice = pricing.basePrice
       }
-    } else if (normalizedOriginalPrice && normalizedOriginalPrice < normalizedPrice) {
-      // If originalPrice is less than price, swap them
-      const temp = normalizedPrice
-      normalizedPrice = normalizedOriginalPrice
-      normalizedOriginalPrice = temp
+    } else {
+      // Fallback to legacy pricing fields
+      if (normalizedSalePrice !== undefined && typeof normalizedSalePrice === 'number' && normalizedSalePrice > 0) {
+        normalizedIsSale = true
+        if (normalizedSalePrice < normalizedPrice) {
+          normalizedOriginalPrice = normalizedOriginalPrice 
+            ? Math.max(normalizedOriginalPrice, normalizedPrice)
+            : normalizedPrice
+          normalizedPrice = normalizedSalePrice
+        }
+      } else if (normalizedOriginalPrice && normalizedOriginalPrice < normalizedPrice) {
+        const temp = normalizedPrice
+        normalizedPrice = normalizedOriginalPrice
+        normalizedOriginalPrice = temp
+      }
     }
     
-    // Ensure originalPrice is only shown if it's greater than the display price
     if (normalizedOriginalPrice && normalizedOriginalPrice <= normalizedPrice) {
       normalizedOriginalPrice = undefined
     }
 
-    // Normalize colors to human-readable strings
+    // Normalize inventory - handle normalized ProductInventory structure
+    let inStock = raw?.inStock ?? false
+    let stockQuantity = raw?.stockQuantity || 0
+    
+    if (Array.isArray(raw?.inventory) && raw.inventory.length > 0) {
+      // Calculate total stock from all inventory records
+      const totalStock = raw.inventory.reduce((sum: number, inv: ProductInventory) => {
+        return sum + (inv.currentStock || 0) - (inv.reservedStock || 0)
+      }, 0)
+      
+      stockQuantity = totalStock
+      inStock = totalStock > 0
+    }
+
+    // Normalize colors from attributes
     let normalizedColors: string[] | undefined = undefined
     if (Array.isArray(raw?.colors)) {
       const isObjectId = (s: string) => /^[a-f\d]{24}$/i.test(s)
@@ -251,7 +286,6 @@ class ApiClient {
           if (typeof c === 'object') {
             const label = c.name || c.colorName || c.label || c.title || c.value || ''
             if (label && !isObjectId(String(label))) return String(label)
-            // As a last resort, avoid exposing raw ObjectId colorId
             if (c.colorId && !isObjectId(String(c.colorId))) return String(c.colorId)
             return null
           }
@@ -259,19 +293,26 @@ class ApiClient {
         })
         .filter((v: any) => typeof v === 'string' && v.trim() !== '')
     }
+    
+    // Also check attributes for colors
+    if (Array.isArray(raw?.attributes)) {
+      const colorAttrs = raw.attributes
+        .filter((attr: any) => attr.attribute?.name?.toLowerCase() === 'color' || attr.attribute?.slug === 'color')
+        .map((attr: any) => attr.displayValue || attr.value)
+        .filter((v: any) => v && typeof v === 'string')
+      
+      if (colorAttrs.length > 0) {
+        normalizedColors = [...(normalizedColors || []), ...colorAttrs]
+      }
+    }
 
-    // Normalize sizes from multiple possible locations
+    // Normalize sizes
     let normalizedSizes: string[] | undefined = undefined
-    // Check availableSizes first
     if (Array.isArray(raw?.availableSizes) && raw.availableSizes.length > 0) {
       normalizedSizes = raw.availableSizes.filter((s: any) => s && typeof s === 'string' && s.trim() !== '')
-    }
-    // Check sizes field
-    else if (Array.isArray(raw?.sizes) && raw.sizes.length > 0) {
+    } else if (Array.isArray(raw?.sizes) && raw.sizes.length > 0) {
       normalizedSizes = raw.sizes.filter((s: any) => s && typeof s === 'string' && s.trim() !== '')
-    }
-    // Check sizeChart.sizes
-    else if (raw?.sizeChart && Array.isArray(raw.sizeChart.sizes) && raw.sizeChart.sizes.length > 0) {
+    } else if (raw?.sizeChart && Array.isArray(raw.sizeChart.sizes) && raw.sizeChart.sizes.length > 0) {
       normalizedSizes = raw.sizeChart.sizes
         .map((s: any) => {
           if (typeof s === 'string') return s
@@ -280,22 +321,31 @@ class ApiClient {
         })
         .filter((s: any): s is string => s && typeof s === 'string' && s.trim() !== '')
     }
-    // Check attributes.sizes
-    else if (raw?.attributes?.sizes && Array.isArray(raw.attributes.sizes) && raw.attributes.sizes.length > 0) {
-      normalizedSizes = raw.attributes.sizes.filter((s: any) => s && typeof s === 'string' && s.trim() !== '')
+    
+    // Also check inventory for sizes
+    if (Array.isArray(raw?.inventory)) {
+      const sizesFromInventory = raw.inventory
+        .map((inv: ProductInventory) => inv.size)
+        .filter((s: any) => s && typeof s === 'string')
+      
+      if (sizesFromInventory.length > 0) {
+        normalizedSizes = [...(normalizedSizes || []), ...sizesFromInventory]
+      }
     }
 
     return {
       ...raw,
       images: imageUrls,
-      brand: brandDisplay || 'Unknown',
-      categories: categoryNames || categoryIds || raw?.categories,
-      // Preserve category field - use first category name or ID
+      brand: brandDisplay,
+      brandId: brandId,
+      categories: categoryNames || categoryIds || raw?.categories || [],
       category: categoryNames?.[0] || categoryIds?.[0] || raw?.category || '',
       price: normalizedPrice,
       originalPrice: normalizedOriginalPrice,
       salePrice: normalizedSalePrice,
       isSale: normalizedIsSale,
+      inStock: inStock,
+      stockQuantity: stockQuantity,
       colors: normalizedColors ?? raw?.colors,
       availableSizes: normalizedSizes ?? raw?.availableSizes ?? raw?.sizes,
     } as Product
@@ -745,6 +795,35 @@ class ApiClient {
 
   async getOrder(id: string): Promise<any> {
     return await this.request(`/orders/${id}`)
+  }
+
+  // Addresses API
+  async getAddresses(userId: string): Promise<any> {
+    return await this.request(`/addresses/user/${userId}`)
+  }
+
+  async getAddress(id: string): Promise<any> {
+    return await this.request(`/addresses/${id}`)
+  }
+
+  async createAddress(addressData: any): Promise<any> {
+    return await this.request('/addresses', {
+      method: 'POST',
+      body: JSON.stringify(addressData),
+    })
+  }
+
+  async updateAddress(id: string, addressData: any): Promise<any> {
+    return await this.request(`/addresses/${id}`, {
+      method: 'PATCH',
+      body: JSON.stringify(addressData),
+    })
+  }
+
+  async deleteAddress(id: string): Promise<any> {
+    return await this.request(`/addresses/${id}`, {
+      method: 'DELETE',
+    })
   }
 }
 

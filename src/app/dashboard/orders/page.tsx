@@ -5,32 +5,20 @@ import { Package, Search, Filter, Download, Eye, Truck } from 'lucide-react'
 import { useState, useEffect } from 'react'
 import { useCustomer } from '@/contexts/CustomerContext'
 import { apiClient } from '@/lib/api'
+import type { Order as NormalizedOrder, OrderItem, Address } from '@/lib/types'
 
-const statusColors = {
-  'Delivered': 'bg-green-100 text-green-800',
-  'Shipped': 'bg-blue-100 text-blue-800',
-  'Processing': 'bg-yellow-100 text-yellow-800',
-  'Cancelled': 'bg-red-100 text-red-800'
+const statusColors: Record<string, string> = {
+  'delivered': 'bg-green-100 text-green-800',
+  'shipped': 'bg-blue-100 text-blue-800',
+  'processing': 'bg-yellow-100 text-yellow-800',
+  'pending': 'bg-gray-100 text-gray-800',
+  'cancelled': 'bg-red-100 text-red-800',
+  'refunded': 'bg-purple-100 text-purple-800'
 }
 
-interface APIOrder {
-  _id: string
-  orderNumber: string
-  createdAt: string
-  status: string
-  totalAmount: number
-  items: Array<{
-    productId: any
-    variationId: any
-    quantity: number
-    price: number
-  }>
-  shippingAddress?: any
-  trackingNumber?: string
-}
-
-interface Order {
+interface DisplayOrder {
   id: string
+  orderNumber: string
   date: string
   status: string
   total: number
@@ -39,21 +27,23 @@ interface Order {
     quantity: number
     price: number
     image: string
+    sku?: string
   }>
   tracking?: string
   shippingAddress: string
+  billingAddress?: string
 }
 
 export default function OrdersPage() {
   const { customer } = useCustomer()
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
-  const [orders, setOrders] = useState<Order[]>([])
+  const [orders, setOrders] = useState<DisplayOrder[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
-    if (customer?._id) {
+    if (customer?._id || customer?.userId) {
       fetchOrders()
     } else {
       setLoading(false)
@@ -61,34 +51,42 @@ export default function OrdersPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [customer])
 
+  const formatAddress = (address: Address | string | undefined): string => {
+    if (!address) return 'N/A'
+    if (typeof address === 'string') return address
+    return `${address.addressLine1}${address.addressLine2 ? ', ' + address.addressLine2 : ''}, ${address.city}${address.state ? ', ' + address.state : ''} ${address.postalCode}, ${address.country}`
+  }
+
   const fetchOrders = async () => {
     try {
       setLoading(true)
       setError(null)
       
-      if (!customer?._id) return
+      const customerId = customer?._id || customer?.userId
+      if (!customerId) return
       
-      const response = await apiClient.getCustomerOrders(customer._id, { page: 1, limit: 50 })
+      const response = await apiClient.getCustomerOrders(customerId, { page: 1, limit: 50 })
       
-      // Map API response to display format
-      const mappedOrders: Order[] = (response.data || []).map((order: APIOrder) => {
-        const items = order.items.map(item => ({
-          name: item.productId?.name || 'Unknown Product',
+      // Map normalized API response to display format
+      const mappedOrders: DisplayOrder[] = (response.data || []).map((order: NormalizedOrder) => {
+        const items = (order.items || []).map((item: OrderItem) => ({
+          name: item.productName || item.product?.name || 'Unknown Product',
           quantity: item.quantity,
-          price: item.price,
-          image: item.productId?.images?.[0] || '/placeholder.jpg'
+          price: item.unitPrice,
+          image: item.product?.images?.[0] || '/images/logo.png',
+          sku: item.productSku
         }))
         
         return {
           id: order.orderNumber || order._id.slice(-8),
+          orderNumber: order.orderNumber,
           date: new Date(order.createdAt).toLocaleDateString(),
           status: order.status,
-          total: order.totalAmount,
+          total: order.total,
           items,
           tracking: order.trackingNumber,
-          shippingAddress: order.shippingAddress ? 
-            `${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.country}` : 
-            'N/A'
+          shippingAddress: formatAddress(order.shippingAddress),
+          billingAddress: formatAddress(order.billingAddress)
         }
       })
       
@@ -236,11 +234,11 @@ export default function OrdersPage() {
                   </div>
                 </div>
                 <div className="flex items-center gap-4">
-                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status as keyof typeof statusColors]}`}>
-                    {order.status}
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${statusColors[order.status.toLowerCase()] || statusColors.pending}`}>
+                    {order.status.charAt(0).toUpperCase() + order.status.slice(1)}
                   </span>
                   <div className="text-right">
-                    <p className="font-semibold text-gray-900">${order.total}</p>
+                    <p className="font-semibold text-gray-900">₨{order.total.toLocaleString()}</p>
                     <p className="text-sm text-gray-500">{order.items.length} item{order.items.length > 1 ? 's' : ''}</p>
                   </div>
                 </div>
@@ -262,7 +260,8 @@ export default function OrdersPage() {
                       <p className="text-sm text-gray-500">Quantity: {item.quantity}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium text-gray-900">${item.price}</p>
+                      <p className="font-medium text-gray-900">₨{(item.price * item.quantity).toLocaleString()}</p>
+                      <p className="text-xs text-gray-500">₨{item.price.toLocaleString()} each</p>
                     </div>
                   </div>
                 ))}
@@ -288,7 +287,7 @@ export default function OrdersPage() {
                       <Eye className="h-4 w-4" />
                       View Details
                     </button>
-                    {order.status === 'Delivered' && (
+                    {order.status.toLowerCase() === 'delivered' && (
                       <button className="px-4 py-2 text-sm text-white bg-black rounded-lg hover:bg-gray-800 transition-colors">
                         Reorder
                       </button>

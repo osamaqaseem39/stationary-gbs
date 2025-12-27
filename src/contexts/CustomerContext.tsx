@@ -1,14 +1,14 @@
 'use client'
 
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react'
-import { getCurrentUser, type Customer } from '@/lib/auth'
+import { getCurrentUser, type CustomerWithUser } from '@/lib/auth'
 
 interface CustomerContextType {
-  customer: Customer | null
+  customer: CustomerWithUser | null
   isLoading: boolean
   isAuthenticated: boolean
   token: string | null
-  login: (token: string, customer: Customer) => void
+  login: (token: string, customer: CustomerWithUser) => void
   logout: () => void
   refreshCustomer: () => Promise<void>
 }

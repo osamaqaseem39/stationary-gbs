@@ -3,36 +3,35 @@
 import { motion } from 'framer-motion'
 import { ShoppingBag } from 'lucide-react'
 import Link from 'next/link'
+import { Product } from '@/lib/api'
 
 interface ProductCardProps {
-  id: string
-  name: string
-  price: number
-  originalPrice?: number
-  image: string
-  category: string
-  brand?: string
-  color?: string
-  isNew?: boolean
-  isOnSale?: boolean
-  slug?: string
+  product: Product
 }
 
-export default function ProductCard({
-  id,
-  name,
-  price,
-  originalPrice,
-  image,
-  category,
-  brand,
-  color,
-  isNew = false,
-  isOnSale = false,
-  slug
-}: ProductCardProps) {
+export default function ProductCard({ product }: ProductCardProps) {
+  const {
+    _id,
+    name,
+    slug,
+    price,
+    originalPrice,
+    salePrice,
+    isSale,
+    images,
+    brand,
+    category,
+    inStock,
+    stockQuantity
+  } = product
+
+  const mainImage = images?.[0] || '/images/logo.png'
+  const displayPrice = price || 0
+  const displayOriginalPrice = originalPrice || (salePrice && price ? price : undefined)
+  const isOnSale = isSale || (salePrice && salePrice < price)
+
   return (
-    <Link href={slug ? `/products/${slug}` : `/products/${id}`}>
+    <Link href={slug ? `/products/${slug}` : `/products/${_id}`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
@@ -43,15 +42,18 @@ export default function ProductCard({
         {/* Image Container - 3:4 Aspect Ratio */}
         <div className="relative aspect-[3/4] overflow-hidden bg-gray-100">
           <img
-            src={image}
+            src={mainImage}
             alt={name}
             className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+            onError={(e) => {
+              e.currentTarget.src = '/images/logo.png'
+            }}
           />
           
           {/* Badges */}
-          {(isNew || isOnSale) && (
+          {(product.isNew || isOnSale) && (
             <div className="absolute top-2 left-2 flex gap-1">
-              {isNew && (
+              {product.isNew && (
                 <span className="bg-green-500 text-white text-xs px-2 py-0.5 rounded font-medium">
                   New
                 </span>
@@ -63,6 +65,15 @@ export default function ProductCard({
               )}
             </div>
           )}
+          
+          {/* Out of Stock Badge */}
+          {!inStock && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center">
+              <span className="bg-white text-gray-900 text-xs px-3 py-1 rounded font-medium">
+                Out of Stock
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Product Info - Minimal Design */}
@@ -70,7 +81,7 @@ export default function ProductCard({
           {/* Name and Brand in one line */}
           <div className="flex items-center gap-2 mb-2">
             <h3 className="text-sm font-medium text-gray-900 truncate flex-1">{name}</h3>
-            {brand && (
+            {brand && brand !== 'Unknown' && (
               <span className="text-xs text-gray-500 flex-shrink-0">{brand}</span>
             )}
           </div>
@@ -79,20 +90,25 @@ export default function ProductCard({
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2">
               <span className="text-base font-semibold text-blue-600">
-                ₨{typeof price === 'number' ? price.toLocaleString() : '0'}
+                ₨{displayPrice.toLocaleString()}
               </span>
-              {originalPrice && typeof originalPrice === 'number' && originalPrice > price && (
+              {displayOriginalPrice && displayOriginalPrice > displayPrice && (
                 <span className="text-xs text-gray-400 line-through">
-                  ₨{originalPrice.toLocaleString()}
+                  ₨{displayOriginalPrice.toLocaleString()}
                 </span>
               )}
             </div>
             <button
               onClick={(e) => {
                 e.preventDefault()
-                // Add to cart logic here
+                // Add to cart logic here - handled by parent component
               }}
-              className="p-1.5 bg-blue-600 text-white rounded hover:bg-blue-700 transition-colors flex-shrink-0"
+              disabled={!inStock}
+              className={`p-1.5 rounded transition-colors flex-shrink-0 ${
+                inStock
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
             >
               <ShoppingBag className="h-4 w-4" />
             </button>

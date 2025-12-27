@@ -1,4 +1,5 @@
 import { API_BASE_URL, getCorsHeaders, getCorsConfig } from './api'
+import type { Customer, User, Address } from './types'
 
 export interface LoginPayload {
   email: string
@@ -10,17 +11,13 @@ export interface RegisterPayload {
   lastName: string
   email: string
   password: string
+  phone?: string
 }
 
-export interface Customer {
-  _id: string
-  firstName: string
-  lastName: string
-  email: string
-  phone?: string
-  addresses?: any[]
-  createdAt: string
-  updatedAt: string
+// Customer with populated user data (for frontend display)
+export interface CustomerWithUser extends Customer {
+  user?: User
+  addresses?: Address[]
 }
 
 export async function loginCustomer(payload: LoginPayload) {
@@ -51,7 +48,7 @@ export async function registerCustomer(payload: RegisterPayload) {
   return res.json()
 }
 
-export async function getCurrentUser(token: string): Promise<Customer> {
+export async function getCurrentUser(token: string): Promise<CustomerWithUser> {
   const res = await fetch(`${API_BASE_URL}/auth/profile`, {
     method: 'GET',
     headers: {
@@ -62,8 +59,36 @@ export async function getCurrentUser(token: string): Promise<Customer> {
   })
   if (!res.ok) throw new Error('Failed to get user')
   const payload = await res.json()
-  // Normalize to return the user object directly
-  return (payload?.data?.user || payload?.user || payload) as Customer
+  
+  // Normalize response - backend may return customer with populated user
+  const customer = payload?.data?.customer || payload?.customer || payload?.data || payload
+  
+  // If customer has userId, we might need to fetch user separately
+  // For now, assume backend returns populated user
+  return customer as CustomerWithUser
+}
+
+// Helper to get user data from customer
+export function getUserFromCustomer(customer: CustomerWithUser): User | null {
+  if (customer.user) {
+    return customer.user
+  }
+  // Fallback: construct user from customer if user is not populated
+  if ((customer as any).email || (customer as any).firstName) {
+    return {
+      _id: (customer as any).userId || customer._id,
+      email: (customer as any).email || '',
+      firstName: (customer as any).firstName || '',
+      lastName: (customer as any).lastName || '',
+      phone: (customer as any).phone,
+      userType: 'customer',
+      isActive: true,
+      emailVerified: (customer as any).emailVerified || false,
+      createdAt: customer.createdAt,
+      updatedAt: customer.updatedAt,
+    } as User
+  }
+  return null
 }
 
 
