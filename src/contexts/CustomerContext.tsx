@@ -16,7 +16,7 @@ interface CustomerContextType {
 const CustomerContext = createContext<CustomerContextType | undefined>(undefined)
 
 export function CustomerProvider({ children }: { children: ReactNode }) {
-  const [customer, setCustomer] = useState<Customer | null>(null)
+  const [customer, setCustomer] = useState<CustomerWithUser | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [token, setToken] = useState<string | null>(null)
 
@@ -35,7 +35,7 @@ export function CustomerProvider({ children }: { children: ReactNode }) {
     }
   }, [])
 
-  const login = (authToken: string, customerData: Customer) => {
+  const login = (authToken: string, customerData: CustomerWithUser) => {
     setToken(authToken)
     setCustomer(customerData)
     localStorage.setItem('auth_token', authToken)

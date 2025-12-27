@@ -89,7 +89,7 @@ export default function Dashboard() {
         className="bg-white rounded-2xl p-6 shadow-sm"
       >
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Welcome back, {customer.firstName}! 👋
+          Welcome back, {customer.user?.firstName || 'there'}! 👋
         </h1>
         <p className="text-gray-600">
           Here's what's happening with your account and orders.

@@ -14,7 +14,7 @@ export const getCorsConfig = (): RequestInit => ({
 // No sample data - API only
 
 // Import normalized types
-import type { Product as NormalizedProduct, DisplayProduct, ProductPricing, ProductInventory, Brand, Category } from './types'
+import type { Product as NormalizedProduct, DisplayProduct, ProductPricing, ProductInventory } from './types'
 
 // Product interface for landing page (compatible with DisplayProduct)
 export interface Product {

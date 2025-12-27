@@ -293,8 +293,6 @@ export default function SearchPage() {
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
                     <ProductCard product={product} />
-                      slug={product.slug}
-                    />
                   </motion.div>
                 ))}
               </div>
