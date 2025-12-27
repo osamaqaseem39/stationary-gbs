@@ -349,19 +349,7 @@ export default function BrandDetailPage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: index * 0.1 }}
                   >
-                    <ProductCard
-                      id={product._id}
-                      name={product.name}
-                      price={product.price}
-                      originalPrice={product.originalPrice}
-                      image={product.images[0] || '/images/1.png'}
-                      category={brand.name}
-                      brand={brand.name}
-                      color={(product as any)?.attributes?.color || (product.colors && product.colors[0])}
-                      isNew={new Date(product.createdAt).getTime() > Date.now() - 7 * 24 * 60 * 60 * 1000}
-                      isOnSale={!!product.originalPrice && product.originalPrice > product.price}
-                      slug={product.slug}
-                    />
+                    <ProductCard product={product} />
                   </motion.div>
                 ))}
               </div>

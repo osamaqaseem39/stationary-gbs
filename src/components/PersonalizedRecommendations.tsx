@@ -216,17 +216,7 @@ const PersonalizedRecommendations: React.FC<PersonalizedRecommendationsProps> = 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {recommendations.map((product) => (
             <div key={product._id} onClick={() => handleProductClick(product)}>
-              <ProductCard 
-                id={product._id}
-                name={product.name}
-                price={product.price}
-                originalPrice={product.originalPrice}
-                image={product.images[0] || '/images/1.png'}
-                category={product.categories?.[0] || product.category || 'Uncategorized'}
-                isNew={product.isNew}
-                isOnSale={product.isSale}
-                slug={product.slug}
-              />
+              <ProductCard product={product} />
             </div>
           ))}
         </div>
